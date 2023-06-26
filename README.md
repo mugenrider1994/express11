@@ -28,3 +28,8 @@ Express.js
 ## Screenshots
 
 ![Note Taker](image.png)
+
+
+## Deployment
+
+https://mugenrider1994.github.io/express11/
