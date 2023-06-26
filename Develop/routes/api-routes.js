@@ -23,6 +23,7 @@ module.exports = function(app) {
         let uniqueId = (data.length).toString();
         newNote.id = uniqueId;
         data.push(newNote);
+        console.log(uniqueId);
 
         fs.writeFileSync("./db/db.json", JSON. stringify(data), function(err) {
             if (err) throw (err);
@@ -32,7 +33,4 @@ module.exports = function(app) {
 
     });
 
-    app.delete("/api/notes/:id", function(req, res) {
-
-    })
 }
