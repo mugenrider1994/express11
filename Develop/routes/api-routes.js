@@ -1,30 +1,36 @@
-const fs = require('fs');
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 
-const dataPath = './Develop/db/db.json';
+// API Routes
+router.get('/notes', (req, res) => {
+  // Read the notes from the file
+  const notes = JSON.parse(fs.readFileSync(path.join(__dirname, '../db/db.json'), 'utf8'));
 
-router.get('api/notes', function (req, res) {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  res.json(data);
+  // Send the notes as a response
+  res.json(notes);
 });
 
-router.get('api/notes/:id', function (req, res) {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  res.json(data[Number(req.params.id)]);
-});
+router.post('/notes', (req, res) => {
+  // Read the existing notes from the file
+  const notes = JSON.parse(fs.readFileSync(path.join(__dirname, '../db/db.json'), 'utf8'));
 
-router.post('api/notes', function (req, res) {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  const newNote = req.body;
-  const uniqueId = String(data.length);
-  newNote.id = uniqueId;
-  data.push(newNote);
-  console.log(uniqueId);
+  // Create a new note object with the request body
+  const newNote = {
+    id: Math.floor(Math.random() * 1000), // Generate a random ID
+    title: req.body.title,
+    text: req.body.text,
+  };
 
-  fs.writeFileSync(dataPath, JSON.stringify(data));
+  // Add the new note to the notes array
+  notes.push(newNote);
 
-  res.json(data);
+  // Write the updated notes array back to the file
+  fs.writeFileSync(path.join(__dirname, '../db/db.json'), JSON.stringify(notes));
+
+  // Send the new note as a response
+  res.json(newNote);
 });
 
 module.exports = router;

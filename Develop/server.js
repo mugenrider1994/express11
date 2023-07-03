@@ -1,32 +1,20 @@
-const fs = require('fs');
-const bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+const path = require('path');
+const apiRoutes = require('./routes/api-routes');
+const htmlRoutes = require('./routes/html-routes');
 
-module.exports = function (app) {
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
+const PORT = process.env.PORT || 8080;
 
-  const dataPath = './Develop/db/db.json';
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static('public'));
 
-  app.get('/assets/notes', function (req, res) {
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    res.json(data);
-  });
+app.use('/api', apiRoutes);
+app.use('/', htmlRoutes);
 
-  app.get('/assets/notes/:id', function (req, res) {
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    res.json(data[Number(req.params.id)]);
-  });
-
-  app.post('/assets/notes', function (req, res) {
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    const newNote = req.body;
-    const uniqueId = String(data.length);
-    newNote.id = uniqueId;
-    data.push(newNote);
-    console.log(uniqueId);
-
-    fs.writeFileSync(dataPath, JSON.stringify(data));
-
-    res.json(data);
-  });
-};
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
