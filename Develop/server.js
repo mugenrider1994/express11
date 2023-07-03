@@ -1,17 +1,32 @@
-const fs = require("fs");
-const express = require("express");
+const fs = require('fs');
+const bodyParser = require('body-parser');
 
-var PORT = process.env.PORT || 8080
-var app = express();
+module.exports = function (app) {
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/public/assets", express.static(__dirname + "/public/assets"));
+  const dataPath = './Develop/db/db.json';
 
-require("./routes/api-routes")(app);
-require("./routes/html-routes")(app);
+  app.get('/assets/notes', function (req, res) {
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    res.json(data);
+  });
 
-app.listen(PORT, function() {
-    console.log("App listening on PORT " + PORT);
-});
+  app.get('/assets/notes/:id', function (req, res) {
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    res.json(data[Number(req.params.id)]);
+  });
 
+  app.post('/assets/notes', function (req, res) {
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    const newNote = req.body;
+    const uniqueId = String(data.length);
+    newNote.id = uniqueId;
+    data.push(newNote);
+    console.log(uniqueId);
+
+    fs.writeFileSync(dataPath, JSON.stringify(data));
+
+    res.json(data);
+  });
+};

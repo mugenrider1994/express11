@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
 const path = require('path');
 
-router.get('/notes', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/notes.html'));
+module.exports = function(app) {
+
+app.get('/notes', (req, res) => {
+  res.sendFile(path.join(__dirname, '../assets/notes.html'));
 });
 
-router.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../assets/index.html'));
 });
 
-module.exports = router;
+}
+
